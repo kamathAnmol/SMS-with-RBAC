@@ -1,4 +1,3 @@
-import Roles from "@models/roles.model";
 import UserRoles from "@models/userRoles.model";
 import User from "@models/users.model";
 
@@ -28,6 +27,7 @@ class UserService {
     email: string;
     password: string;
     phone: string;
+    status: string;
   }) {
     return await User.create(data);
   }
@@ -51,7 +51,6 @@ class UserService {
   }
 
   // * get user roles
-
   static async getUserRoles(id: number): Promise<UserRoles[]> {
     return await UserRoles.findAll({
       where: {

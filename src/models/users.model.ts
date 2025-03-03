@@ -59,7 +59,6 @@ User.init(
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         len: {
           msg: "Invalid Phone Number",
