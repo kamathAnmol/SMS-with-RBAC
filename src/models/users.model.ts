@@ -49,12 +49,6 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: {
-          msg: "Password must be atleast 8 charecters",
-          args: [8, 16],
-        },
-      },
     },
     phone: {
       type: DataTypes.STRING,

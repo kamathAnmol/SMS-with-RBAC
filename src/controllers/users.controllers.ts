@@ -5,39 +5,70 @@ import UserRoles from "@models/userRoles.model";
 import Tokens from "@models/tokens.model";
 import { Request, Response } from "express";
 import UserRoleServices from "@services/userRole.services";
-
-interface UserData {
-  user?: User;
-  userRole?: UserRoles;
-  token?: Tokens;
-  status?: boolean;
-  message?: string;
-}
+import generateHash from "@utilities/generateHash";
+import generateToken from "@utilities/generateToken";
 
 class UserConrollers {
-  static async login(req: Request, res: Response): Promise<UserData> {
-    const { email, password, role } = req.body;
-    const user = await UserService.getUserByEmail(email);
-    if (!user) {
-      return {
+  static async login(req: Request, res: Response) {
+    try {
+      const { email, password, role } = req.body;
+      if (!email || !password || !role) {
+        res.status(400).json({
+          message: "Email, Password and Role is required in request body",
+          status: false,
+          data: null,
+        });
+      }
+      const user = await UserService.getUserByEmail(email);
+      if (!user) {
+        res.status(400).json({
+          message: "User not found (User with given email is not found)",
+          status: false,
+          data: null,
+        });
+      } else {
+        const hashedPassword = generateHash(password);
+        if (user.password !== hashedPassword) {
+          res.status(400).json({
+            message: "Incorrect Password",
+            status: false,
+            data: null,
+          });
+          return;
+        }
+        const userRole = await UserRoleServices.getUserRole(user.id, role);
+        if (!userRole) {
+          res.status(400).json({
+            message: `User dont have access to ${role}`,
+            status: false,
+            data: null,
+          });
+        } else {
+          const token = await TokenServices.createToken(userRole.id);
+          res.cookie("accessToken", token.token, { expires: token.expiresOn });
+          res.status(201).json({
+            status: true,
+            message: "User logged in successfully",
+            data: {
+              user: user,
+              userRole: userRole,
+              token: token,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.log(
+        "SMS-with-RBAC :: controllers/users.controllers.ts :: UserConrollers :: 29 :: error:",
+        error
+      );
+
+      res.status(400).json({
         status: false,
-        message: "User with given email was not Found",
-      };
+        message: "Error while logging in user",
+        data: error,
+      });
     }
-    if (user.password !== password) {
-      return { status: false, message: "Incorrect Password" };
-    }
-    const userRoles = await UserService.getUserRoles(user.id);
-    const userRole = userRoles.find((ur) => ur.role === role);
-    if (!userRole) {
-      return { status: false, message: "User role does not exist" };
-    }
-    const newToken = await TokenServices.createToken(userRole.id);
-    return {
-      user: user,
-      userRole: userRole,
-      token: newToken,
-    };
   }
 
   static async register(req: Request, res: Response) {
@@ -65,15 +96,12 @@ class UserConrollers {
         });
         return;
       }
+      const hashedPassword = generateHash(password);
       const isUserAvailable = await UserService.getUserByEmail(email);
       if (isUserAvailable) {
         const isUserRoleAvailable = await UserRoleServices.getUserRole(
           isUserAvailable.id,
           role
-        );
-        console.log(
-          "👾 SMS-with-RBAC :: controllers/users.controllers.ts :: isUserRoleAvailable :: 77 :: isUserRoleAvailable:",
-          isUserRoleAvailable
         );
         if (isUserRoleAvailable) {
           res.status(400).json({
@@ -100,22 +128,14 @@ class UserConrollers {
           name: name,
           email: email,
           phone: phone,
-          password: password,
+          password: hashedPassword,
           status: "active",
         });
-        console.log(
-          "👾 SMS-with-RBAC :: controllers/users.controllers.ts :: newUser :: 102 :: newUser:",
-          newUser
-        );
         // todo : add entry to student,faculty table based on the role
         const newUserRole = await UserRoleServices.addUserRole(
           newUser.id,
           role,
           1234 // todo : pass the id from the role table(student,faculty)
-        );
-        console.log(
-          "👾 SMS-with-RBAC :: controllers/users.controllers.ts :: newUserRole :: 111 :: newUserRole:",
-          newUserRole
         );
 
         res.status(201).json({
