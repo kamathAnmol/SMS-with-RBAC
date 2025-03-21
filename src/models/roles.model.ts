@@ -4,7 +4,7 @@ import sequelize from "../config/database";
 class Roles extends Model {
   public id!: number;
   public name!: String;
-  public description!: String;
+  public description?: String;
 }
 
 Roles.init(

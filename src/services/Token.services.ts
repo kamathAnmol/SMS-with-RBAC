@@ -18,6 +18,17 @@ class TokenServices {
       expiresOn: expireTime,
     });
   }
+  static async getTokenByUserRole(userRole: number) {
+    return await Tokens.findOne({
+      where: {
+        userRole: userRole,
+      },
+    });
+  }
+
+  static async deleteToken(token: Tokens) {
+    return await token.destroy();
+  }
 }
 
 export default TokenServices;

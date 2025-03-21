@@ -1,16 +1,14 @@
 import UserService from "@services/user.services";
 import TokenServices from "@services/token.services";
-import User from "@models/users.model";
-import UserRoles from "@models/userRoles.model";
-import Tokens from "@models/tokens.model";
 import { Request, Response } from "express";
 import UserRoleServices from "@services/userRole.services";
 import generateHash from "@utilities/generateHash";
-import generateToken from "@utilities/generateToken";
+import checkExpiry from "@utilities/checkExpiry";
 
-class UserConrollers {
+class UserControllers {
   static async login(req: Request, res: Response) {
     try {
+      // * validate
       const { email, password, role } = req.body;
       if (!email || !password || !role) {
         res.status(400).json({
@@ -19,6 +17,7 @@ class UserConrollers {
           data: null,
         });
       }
+      // * Find user by given Email
       const user = await UserService.getUserByEmail(email);
       if (!user) {
         res.status(400).json({
@@ -27,6 +26,7 @@ class UserConrollers {
           data: null,
         });
       } else {
+        // * check password
         const hashedPassword = generateHash(password);
         if (user.password !== hashedPassword) {
           res.status(400).json({
@@ -36,6 +36,7 @@ class UserConrollers {
           });
           return;
         }
+        // * get user role
         const userRole = await UserRoleServices.getUserRole(user.id, role);
         if (!userRole) {
           res.status(400).json({
@@ -44,8 +45,31 @@ class UserConrollers {
             data: null,
           });
         } else {
-          const token = await TokenServices.createToken(userRole.id);
-          res.cookie("accessToken", token.token, { expires: token.expiresOn });
+          // * check if token is available and is not expired, if expired create new token
+          let token;
+
+          const userRoleToken = await TokenServices.getTokenByUserRole(
+            userRole.id
+          );
+          if (userRoleToken) {
+            const isExpired = checkExpiry(userRoleToken);
+            if (isExpired) {
+              const deleteToken = await TokenServices.deleteToken(
+                userRoleToken
+              );
+              const newToken = await TokenServices.createToken(userRole.id);
+              token = newToken;
+            } else {
+              token = userRoleToken;
+            }
+          } else {
+            const newToken = await TokenServices.createToken(userRole.id);
+            token = newToken;
+          }
+          if (token)
+            res.cookie("accessToken", token.token, {
+              expires: token.expiresOn,
+            });
           res.status(201).json({
             status: true,
             message: "User logged in successfully",
@@ -59,7 +83,7 @@ class UserConrollers {
       }
     } catch (error) {
       console.log(
-        "SMS-with-RBAC :: controllers/users.controllers.ts :: UserConrollers :: 29 :: error:",
+        "SMS-with-RBAC :: controllers/users.controllers.ts :: UserControllers :: 29 :: error:",
         error
       );
 
@@ -168,4 +192,4 @@ class UserConrollers {
   }
 }
 
-export default UserConrollers;
+export default UserControllers;
