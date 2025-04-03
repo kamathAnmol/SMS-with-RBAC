@@ -1,13 +1,15 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "@config/database";
+import Modules from "./modules.model";
+import Roles from "./roles.model";
 
 class Permissions extends Model {
   public id!: number;
-  public name!: string;
-  public description?: string;
-  public readRoutes!: string[];
-  public writeRoutes!: string[];
-  public deleteRoutes!: string[];
+  public role!: number;
+  public module!: number;
+  public read!: boolean;
+  public write!: boolean;
+  public delete!: boolean;
 }
 
 Permissions.init(
@@ -17,29 +19,33 @@ Permissions.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
+    role: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
-      validate: {
-        len: [3, 15],
+      references: {
+        model: Roles,
+        key: "id",
       },
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    module: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Modules,
+        key: "id",
+      },
     },
-    readRoutes: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
+    read: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
-    writeRoutes: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
+    write: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
-    deleteRoutes: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
+    delete: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
   },
   {
