@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/", router);
+app.use("/api", router);
 
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);

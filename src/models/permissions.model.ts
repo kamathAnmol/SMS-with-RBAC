@@ -7,9 +7,7 @@ class Permissions extends Model {
   public id!: number;
   public role!: number;
   public module!: number;
-  public read!: boolean;
-  public write!: boolean;
-  public delete!: boolean;
+  public permissions!: string;
 }
 
 Permissions.init(
@@ -35,17 +33,15 @@ Permissions.init(
         key: "id",
       },
     },
-    read: {
-      type: DataTypes.BOOLEAN,
+    permissions: {
+      type: DataTypes.STRING,
       allowNull: false,
-    },
-    write: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    delete: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
+      validate: {
+        is: {
+          args: /^[01]{3}$/,
+          msg: "Permissions must be a string of 3 characters, 0 or 1",
+        },
+      },
     },
   },
   {
