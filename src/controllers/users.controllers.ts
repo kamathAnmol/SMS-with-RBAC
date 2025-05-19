@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import UserRoleServices from "@services/userRole.services";
 import generateHash from "@utilities/generateHash";
 import checkExpiry from "@utilities/checkExpiry";
+import Logs from "@utilities/log";
 
 class UserControllers {
   static async login(req: Request, res: Response) {
@@ -82,7 +83,7 @@ class UserControllers {
         }
       }
     } catch (error) {
-      console.log(
+      Logs.error(
         "SMS-with-RBAC :: controllers/users.controllers.ts :: UserControllers :: 29 :: error:",
         error
       );
@@ -170,7 +171,7 @@ class UserControllers {
         return;
       }
     } catch (error) {
-      console.log(
+      Logs.error(
         "SMS-with-RBAC :: controllers/users.controllers.ts :: emailAvailable :: 62 :: error:",
         error
       );

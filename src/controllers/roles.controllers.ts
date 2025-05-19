@@ -1,4 +1,5 @@
 import RolesServices from "@services/roles.services";
+import Logs from "@utilities/log";
 import { Request, Response } from "express";
 
 class RolesConroller {
@@ -11,7 +12,7 @@ class RolesConroller {
         data: roles,
       });
     } catch (error) {
-      console.log(
+      Logs.error(
         " SMS-with-RBAC :: routes/roles.route.ts :: roles :: 14 :: error:",
         error
       );
@@ -42,7 +43,7 @@ class RolesConroller {
         data: newRole,
       });
     } catch (error) {
-      console.log(
+      Logs.error(
         "SMS-with-RBAC :: routes/roles.route.ts :: roles :: 31 :: error:",
         error
       );

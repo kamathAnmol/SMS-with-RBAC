@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import sequelize from "@config/database";
 import router from "@routes/index";
 import cookieParser from "cookie-parser";
+import Logs from "@utilities/log";
 config();
 
 const app = express();
@@ -19,13 +20,13 @@ app.use(cookieParser());
 app.use("/api", router);
 
 app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
+  Logs.info(`Server is running on port ${port}`);
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
 
-    console.log("DB connected ");
+    Logs.info("DB connected ");
   } catch (error) {
-    console.error("Error while connecteing to DB, ", error);
+    Logs.error("Error while connecteing to DB, ", error);
   }
 });
