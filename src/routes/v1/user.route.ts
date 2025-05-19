@@ -4,7 +4,7 @@ import { Router } from "express";
 const UserRouter = Router();
 
 UserRouter.get("/getAll", UserControllers.getAll);
-UserRouter.post("/create", UserControllers.register);
+UserRouter.post("/create", UserControllers.create);
 UserRouter.post("/login", UserControllers.login);
 
 export default UserRouter;

@@ -17,16 +17,15 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api", router);
+app.use("/", router);
 
 app.listen(port, async () => {
   Logs.info(`Server is running on port ${port}`);
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-
     Logs.info("DB connected ");
   } catch (error) {
-    Logs.error("Error while connecteing to DB, ", error);
+    Logs.error("Error while connecting to DB, ", error);
   }
 });

@@ -1,9 +1,11 @@
 export default class Logs {
   // Constants for ANSI color codes
   private static readonly RESET = "\x1b[0m";
-  private static readonly RED_BG = "\x1b[41m";
-  private static readonly BLUE_BG = "\x1b[44m";
-  private static readonly YELLOW_BG = "\x1b[43m";
+  private static readonly RED = "\x1b[31m";
+  private static readonly BLUE = "\x1b[34m";
+  private static readonly YELLOW = "\x1b[33m";
+  private static readonly GREEN = "\x1b[32m";
+  private static readonly MAGENTA = "\x1b[35m"; // Purple/magenta for DB logs
 
   // Log level enum to control logging output
   static LogLevel = {
@@ -13,6 +15,7 @@ export default class Logs {
     INFO: 3,
     DEBUG: 4,
     ALL: 5,
+    DB: 10, // Special level for database logs, not included in ALL
   };
 
   // Current log level - read from NODE_ENV or default to ALL
@@ -29,6 +32,12 @@ export default class Logs {
     return Logs.LogLevel.ALL;
   })();
 
+  // Database logging flag - separate from main log level hierarchy
+  static enableDbLogging = (() => {
+    const dbLogging = process.env.DB_LOGGING?.toLowerCase();
+    return dbLogging === "true" || dbLogging === "1" || dbLogging === "yes";
+  })();
+
   /**
    * Standard log output
    */
@@ -39,38 +48,53 @@ export default class Logs {
   }
 
   /**
-   * Error log with red background
+   * Error log with red text
    */
   static error(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.ERROR) {
-      console.error(Logs.RED_BG, ...messages, Logs.RESET);
+      console.error(Logs.RED, ...messages, Logs.RESET);
     }
   }
 
   /**
-   * Warning log with yellow background
+   * Warning log with yellow text
    */
   static warn(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.WARN) {
-      console.warn(Logs.YELLOW_BG, ...messages, Logs.RESET);
+      console.warn(Logs.YELLOW, ...messages, Logs.RESET);
     }
   }
 
   /**
-   * Info log with blue background
+   * Info log with blue text
    */
   static info(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.INFO) {
-      console.info(Logs.BLUE_BG, ...messages, Logs.RESET);
+      console.info(Logs.BLUE, ...messages, Logs.RESET);
     }
   }
 
   /**
-   * Debug log for detailed debugging information
+   * Debug log with green text for detailed debugging information
    */
   static debug(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.DEBUG) {
-      console.debug(...messages);
+      console.debug(Logs.GREEN, ...messages, Logs.RESET);
+    }
+  }
+
+  /**
+   * Database log with magenta text - not controlled by the standard log level
+   * Needs to be explicitly enabled via DB_LOGGING environment variable
+   */
+  static db(...messages: any[]): void {
+    if (Logs.enableDbLogging) {
+      console.log(
+        Logs.MAGENTA,
+        `[DB - ${new Date().toISOString()}]`,
+        ...messages,
+        Logs.RESET
+      );
     }
   }
 }

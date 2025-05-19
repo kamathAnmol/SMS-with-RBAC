@@ -76,6 +76,7 @@ User.init(
     sequelize,
     tableName: "users",
     timestamps: true,
+    comment: "Users Table",
   }
 );
 

@@ -1,3 +1,4 @@
+import Logs from "@utilities/log";
 import { config } from "dotenv";
 import { Sequelize } from "sequelize";
 config();
@@ -9,7 +10,9 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT || "5432"),
-  clientMinMessages: "notice",
+  logging: (sql) => {
+    Logs.db(sql);
+  },
 });
 
 export default sequelize;

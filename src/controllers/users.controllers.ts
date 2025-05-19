@@ -5,6 +5,7 @@ import UserRoleServices from "@services/userRole.services";
 import generateHash from "@utilities/generateHash";
 import checkExpiry from "@utilities/checkExpiry";
 import Logs from "@utilities/log";
+import { StatusCodes } from "http-status-codes";
 
 class UserControllers {
   static async login(req: Request, res: Response) {
@@ -96,24 +97,22 @@ class UserControllers {
     }
   }
 
-  static async register(req: Request, res: Response) {
+  static async create(req: Request, res: Response) {
     try {
       const {
         name,
         email,
         phone,
         password,
-        role,
       }: {
         name: string;
         email: string;
         phone: string;
-        role: number;
         password: string;
       } = req.body;
 
-      if (!name || !email || !phone || !password || !role) {
-        res.status(401).json({
+      if (!name || !email || !phone || !password) {
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: false,
           message:
             "Name, Email, Phone and Password is required in Request Body",
@@ -124,30 +123,11 @@ class UserControllers {
       const hashedPassword = generateHash(password);
       const isUserAvailable = await UserService.getUserByEmail(email);
       if (isUserAvailable) {
-        const isUserRoleAvailable = await UserRoleServices.getUserRole(
-          isUserAvailable.id,
-          role
-        );
-        if (isUserRoleAvailable) {
-          res.status(400).json({
-            status: false,
-            message: "Email Already used for the role",
-            data: null,
-          });
-          return;
-        }
-        // todo : add entry to student,faculty table based on the role
-        const newUserRole = await UserRoleServices.addUserRole(
-          isUserAvailable.id,
-          role,
-          1234 // todo : pass the id from the role table(student,faculty)
-        );
-        res.status(201).json({
-          status: true,
-          message: "User was already created, Created a User Role",
-          data: { user: isUserAvailable, userRole: newUserRole },
+        res.send(StatusCodes.CONFLICT).json({
+          message: "User already registered, Please Login",
+          data: null,
+          status: false,
         });
-        return;
       } else {
         const newUser = await UserService.createUser({
           name: name,
@@ -156,17 +136,10 @@ class UserControllers {
           password: hashedPassword,
           status: "active",
         });
-        // todo : add entry to student,faculty table based on the role
-        const newUserRole = await UserRoleServices.addUserRole(
-          newUser.id,
-          role,
-          1234 // todo : pass the id from the role table(student,faculty)
-        );
-
-        res.status(201).json({
+        res.status(StatusCodes.CREATED).json({
           status: true,
-          message: "User is Created with user role",
-          data: { user: newUser, userRole: newUserRole },
+          message: "User created successfully",
+          data: newUser,
         });
         return;
       }
@@ -175,7 +148,7 @@ class UserControllers {
         "SMS-with-RBAC :: controllers/users.controllers.ts :: emailAvailable :: 62 :: error:",
         error
       );
-      res.status(400).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: false,
         message: "Error while creating new user",
         data: error,
@@ -185,7 +158,7 @@ class UserControllers {
 
   static async getAll(req: Request, res: Response) {
     const result = await UserService.getAllUsers();
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       status: true,
       message: "Success",
       data: result,
