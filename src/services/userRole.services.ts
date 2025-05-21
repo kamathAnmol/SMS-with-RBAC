@@ -1,3 +1,4 @@
+import Roles from "@models/roles.model";
 import UserRoles from "@models/userRoles.model";
 
 class UserRoleServices {
@@ -11,6 +12,18 @@ class UserRoleServices {
   }
   static async addUserRole(user: number, role: number, ref: number) {
     return UserRoles.create({ user: user, role: role, student: ref });
+  }
+  static async getUserRolesByUser(user: number) {
+    // Find all roles for the user and include role names
+    return await UserRoles.findAll({
+      where: { user: user },
+      include: [
+        {
+          model: Roles,
+          attributes: ["name"],
+        },
+      ],
+    });
   }
 }
 

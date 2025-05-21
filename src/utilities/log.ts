@@ -43,7 +43,7 @@ export default class Logs {
    */
   static log(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.DEBUG) {
-      console.log(...messages);
+      console.log(`[${new Date().toISOString()}]`, ...messages);
     }
   }
 
@@ -52,7 +52,12 @@ export default class Logs {
    */
   static error(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.ERROR) {
-      console.error(Logs.RED, ...messages, Logs.RESET);
+      console.error(
+        Logs.RED,
+        `[${new Date().toISOString()}]`,
+        ...messages,
+        Logs.RESET
+      );
     }
   }
 
@@ -61,7 +66,12 @@ export default class Logs {
    */
   static warn(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.WARN) {
-      console.warn(Logs.YELLOW, ...messages, Logs.RESET);
+      console.warn(
+        Logs.YELLOW,
+        `[${new Date().toISOString()}]`,
+        ...messages,
+        Logs.RESET
+      );
     }
   }
 
@@ -70,7 +80,12 @@ export default class Logs {
    */
   static info(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.INFO) {
-      console.info(Logs.BLUE, ...messages, Logs.RESET);
+      console.info(
+        Logs.BLUE,
+        `[${new Date().toISOString()}]`,
+        ...messages,
+        Logs.RESET
+      );
     }
   }
 
@@ -79,7 +94,12 @@ export default class Logs {
    */
   static debug(...messages: any[]): void {
     if (Logs.currentLogLevel >= Logs.LogLevel.DEBUG) {
-      console.debug(Logs.GREEN, ...messages, Logs.RESET);
+      console.debug(
+        Logs.GREEN,
+        `[${new Date().toISOString()}]`,
+        ...messages,
+        Logs.RESET
+      );
     }
   }
 
@@ -91,7 +111,7 @@ export default class Logs {
     if (Logs.enableDbLogging) {
       console.log(
         Logs.MAGENTA,
-        `[DB - ${new Date().toISOString()}]`,
+        `[${new Date().toISOString()}]`,
         ...messages,
         Logs.RESET
       );

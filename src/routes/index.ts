@@ -6,9 +6,7 @@ function rootGet(req: Request, res: Response) {
   res.status(StatusCodes.OK).json({
     message:
       "Welcome to SMS with RBAC - Student Management system with Role based access control",
-    data: {
-      availableRoutes: ["/api/v1"],
-    },
+    data: {},
     status: true,
     github: "https://github.com/kamathAnmol/SMS-with-RBAC",
   });

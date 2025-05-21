@@ -6,6 +6,7 @@ import sequelize from "@config/database";
 import router from "@routes/index";
 import cookieParser from "cookie-parser";
 import Logs from "@utilities/log";
+import "@models/associations";
 config();
 
 const app = express();
