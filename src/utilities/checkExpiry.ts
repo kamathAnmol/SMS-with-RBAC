@@ -1,7 +1,9 @@
-import Tokens from "@models/sessions.model";
+import Sessions from "@models/sessions.model";
 
-export default function checkExpiry(token: Tokens) {
+export default function checkExpiry(createdAt: string, expiryDuration: string) {
   const now = new Date();
-  const expiry = new Date(token.expiresOn);
+  const createdDate = new Date(createdAt);
+  const expirySeconds = parseInt(expiryDuration, 10);
+  const expiry = new Date(createdDate.getTime() + expirySeconds * 1000);
   return expiry > now;
 }

@@ -7,6 +7,8 @@ class Sessions extends Model {
   public user!: number;
   public access_token!: String;
   public refresh_token!: String;
+  public createdAt!: string;
+  public updatedAt!: string;
 }
 
 Sessions.init(
@@ -38,7 +40,7 @@ Sessions.init(
   {
     sequelize,
     tableName: "sessions",
-    createdAt: true,
+    timestamps: true,
   }
 );
 

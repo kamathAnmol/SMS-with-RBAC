@@ -4,7 +4,6 @@ import generateHash from "@utilities/generateHash";
 import Logs from "@utilities/log";
 import { StatusCodes } from "http-status-codes";
 import UserRoleServices from "@services/userRole.services";
-import generateToken from "@utilities/generateToken";
 import SessionServices from "@services/sessions.services";
 
 class AuthControllers {
@@ -59,17 +58,13 @@ class AuthControllers {
       }
       delete (user as any).password;
 
-      /* 
-        todo : check whether there is a active session and check if it is expired (both access and refresh), 
-        * if none of them is expired send the same tokens
-        * if only access token is expired generate new accessToken update the db and send the token in cookie
-        * if both of them are expired create new tokens (both) and send them in the cookie
-      */
+      /*
+       * create new session, if existing session is found delete it
+       */
 
-      // const existingSession = await SessionServices.getTokenByUser(user.id);
-
+      await SessionServices.removeUserSession(user.id);
+      const tokens = await SessionServices.createSession(user.id);
       const userRoles = await UserRoleServices.getUserRolesByUser(user.id);
-      const tokens = await SessionServices.createToken(user.id);
       res.cookie("accessToken", tokens.accessToken);
       res.cookie("refreshToken", tokens.refreshToken);
       res.cookie("userData", {

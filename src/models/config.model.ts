@@ -11,11 +11,6 @@ class Config extends Model {
 
 Config.init(
   {
-    id: {
-      primaryKey: true,
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-    },
     name: {
       type: DataTypes.STRING,
       unique: true,
@@ -23,6 +18,7 @@ Config.init(
         max: 30,
         min: 2,
       },
+      primaryKey: true,
     },
     value: {
       type: DataTypes.STRING,

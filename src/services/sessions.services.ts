@@ -9,7 +9,7 @@ class SessionServices {
     return await Sessions.findByPk(id);
   }
 
-  static async getTokenByUser(user: number) {
+  static async getSessionByUser(user: number) {
     return await Sessions.findOne({
       where: {
         user: user,
@@ -17,7 +17,15 @@ class SessionServices {
     });
   }
 
-  static async createToken(user: number) {
+  static async removeUserSession(user: number) {
+    return await Sessions.destroy({
+      where: {
+        user: user,
+      },
+    });
+  }
+
+  static async createSession(user: number) {
     const accessToken = generateToken();
     const refreshToken = generateToken();
     await Sessions.create({
@@ -29,6 +37,12 @@ class SessionServices {
       accessToken: accessToken.token,
       refreshToken: refreshToken.token,
     };
+  }
+
+  static async updateAccessToken(session: Sessions) {
+    const newAccessToken = generateToken();
+    await session.update("access_token", newAccessToken.fingerprint);
+    return newAccessToken.token;
   }
 
   static async deleteToken(session: Sessions) {

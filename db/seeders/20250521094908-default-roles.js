@@ -16,6 +16,12 @@ module.exports = {
       "roles",
       [
         {
+          name: "Default",
+          description: "Default Role",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
           name: "Admin",
           description: "System administrator",
           createdAt: new Date(),
@@ -35,6 +41,12 @@ module.exports = {
         },
         {
           name: "Parent",
+          description: "Parent or guardian",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "Default",
           description: "Parent or guardian",
           createdAt: new Date(),
           updatedAt: new Date(),

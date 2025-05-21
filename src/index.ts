@@ -24,8 +24,9 @@ app.listen(port, async () => {
   Logs.info(`Server is running on port ${port}`);
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
     Logs.info("DB connected ");
+    await sequelize.sync({ alter: true });
+    Logs.info("DB synced");
   } catch (error) {
     Logs.error("Error while connecting to DB, ", error);
   }
