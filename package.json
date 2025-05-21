@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node build.js",
     "start": "node dist/index.js",
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
-    "dev:dbLog": "LOG_LEVEL=ALL DB_LOGGING=true nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
-    "dev:errorLog": "LOG_LEVEL=ERROR nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "build": "node esbuild.config.js",
+    "dev": "tsx watch src/index.ts",
+    "dev:dbLog": "LOG_LEVEL=ALL DB_LOGGING=true tsx watch src/index.ts",
+    "dev:errorLog": "LOG_LEVEL=ERROR tsx watch src/index.ts",
     "test": "jest"
   },
+  "type": "commonjs",
   "dependencies": {
     "@sequelize/postgres": "^7.0.0-alpha.45",
     "cookie-parser": "^1.4.7",
@@ -34,12 +35,16 @@
     "@types/node": "^20.17.30",
     "@types/pg": "^8.11.11",
     "@types/sequelize": "^4.28.20",
-    "esbuild": "^0.25.2",
+    "esbuild": "^0.25.4",
+    "esbuild-plugin-alias": "^0.2.1",
+    "fs": "^0.0.1-security",
     "module-alias": "^2.2.3",
-    "nodemon": "^3.0.3",
+    "path": "^0.12.7",
     "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tslib": "^2.8.1",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.2"
   }
 }

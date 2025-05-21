@@ -30,5 +30,6 @@ Modules.init(
   {
     sequelize,
     tableName: "modules",
+    timestamps: true,
   }
 );
